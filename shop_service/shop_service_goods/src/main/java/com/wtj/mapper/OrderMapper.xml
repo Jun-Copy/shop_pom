@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wtj.mapper.OrderMapper" >
+    
+    <resultMap id="orderList" type="com.wtj.entity.Orders">
+        <result column="id" property="id"/>
+        <result column="order_id" property="orderId"/>
+        <result column="person" property="person"/>
+        <result column="address" property="address"/>
+        <result column="phone" property="phone"/>
+        <result column="code" property="code"/>
+        <result column="all_price" property="allPrice"/>
+        <result column="create_time" property="createTime"/>
+        <result column="u_id" property="uId"/>
+        <result column="status" property="status"/>
+        <collection property="orderDetilsList" ofType="com.wtj.entity.OrderDetils">
+            <result column="od_id" property="id" />
+            <result column="g_Image" property="gImage" />
+            <result column="g_name" property="gName" />
+            <result column="g_price" property="gPrice" />
+            <result column="g_number" property="gNumber" />
+            <result column="o_id" property="oId" />
+        </collection>
+    </resultMap>
+
+    <select id="getOrderListByUId" resultMap="orderList">
+      select *,od.id as od_id from orders o join order_detils od where o.id = od.o_id and o.u_id=#{uId}
+    </select>
+</mapper>

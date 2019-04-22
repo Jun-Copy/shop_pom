@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <base th:href="${#request.getContextPath()+'/'}"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>商品添加</title>
+    <!-- Invalid Stylesheet. This makes stuff look pretty. Remove it if you want the CSS completely valid -->
+    <!-- Reset Stylesheet -->
+    <link rel="stylesheet" href="resources/css/reset.css" type="text/css"
+          media="screen" />
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="resources/css/style.css" type="text/css"
+          media="screen" />
+    <link rel="stylesheet" href="resources/css/invalid.css" type="text/css"
+          media="screen" />
+
+    <!-- Javascripts  -->
+    <!-- jQuery -->
+    <script type="text/javascript"
+            src="resources/scripts/jquery-1.8.3.min.js"></script>
+    <!-- jQuery Configuration -->
+   <!-- <script type="text/javascript"
+            src="resources/scripts/simpla.jquery.configuration.js"></script>-->
+
+    <!--引入webUploader插件-->
+    <!--引入CSS-->
+    <link rel="stylesheet" type="text/css" href="resources/widget/webuploader/webuploader.css">
+    <!--引入JS-->
+    <script type="text/javascript" src="resources/widget/webuploader/webuploader.min.js"></script>
+
+    <!--引入富文本编辑-->
+    <link rel="stylesheet" href="http://www.jq22.com/jquery/bootstrap-3.3.4.css">
+    <link href="resources/widget/dist/summernote.css" rel="stylesheet"/>
+    <script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+    <script src="http://www.jq22.com/jquery/bootstrap-3.3.4.js"></script>
+    <script src="resources/widget/dist/summernote.js"></script>
+    <script src="resources/widget/dist/lang/summernote-zh-CN.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // 初始化Web Uploader
+            uploader = WebUploader.create({
+                // 选完文件后，是否自动上传。
+                auto: false,
+                // swf文件路径
+                swf: 'resources/widget/webuploader/Uploader.swf',
+                // 文件接收服务端。
+                server: 'image/upload',
+                // 选择文件的按钮。可选。
+                // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                pick: '#filePicker',
+                // 只允许选择图片文件。
+                accept: {
+                    title: 'Images',
+                    extensions: 'gif,jpg,jpeg,bmp,png',
+                    mimeTypes: 'image/*'
+                }
+            });
+            /*调用富文本*/
+            $('.summernote').summernote({
+                width:900,
+                height: 500,
+                tabsize: 2,
+                lang: 'zh-CN'
+            });
+            // 当有文件添加进来的时候
+            uploader.on( 'fileQueued', function( file ) {
+                // 创建缩略图
+                // 如果为非图片文件，可以不用调用此方法。
+                // thumbnailWidth x thumbnailHeight 为 100 x 100
+                uploader.makeThumb( file, function( error, src ) {
+                    if ( error ) {
+                       alert("预览失败")
+                    }
+                    $("#images_div").append("<img src=\""+src+"\" style=\"height: 100px;width: 100px;margin: 10px 0px 0px 10px;\">")
+                }, 100, 100 );
+            });
+            uploader.on('uploadSuccess',function (file,response) {
+                var val = $("#gdImage").val();
+                if (val.length>0){
+                    val += "|";
+                }
+                val+=response.uploadPath;
+                $("#gdImage").val(val);
+            })
+        })
+        /*上传图片的方法*/
+        function uploader_img() {
+            if(uploader){
+                uploader.upload();
+            }
+        }
+        /*将富文本编辑框的内容设到表单里*/
+        function initInfo() {
+            var code=$('.summernote').summernote('code');
+            $("#gdInfo").val(code);
+        }
+    </script>
+
+
+
+</head>
+<body>
+<div id="main-content">
+    <div class="content-box">
+        <div class="content-box-content">
+            <div class="tab-content default-tab" id="tab2">
+                <form action="goods/add" method="post">
+                    <fieldset>
+                        <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+                        <p>
+                            <label>商品名称</label> <input
+                                class="text-input small-input" type="text"
+                                name="gdName" />
+                        </p>
+                        <p>
+                            <label>商品库存</label> <input
+                                class="text-input small-input" type="text"
+                                name="gdSave" />
+                        </p>
+                        <p>
+                            <label>商品价格</label> <input
+                                class="text-input small-input" type="text"
+                                name="gdPrice" />
+                        </p>
+                        <p>
+
+                            <label>商品图片</label>
+                            <input type="hidden" id="gdImage" name="gdImage" />
+                            <div id="images_div" style="border: solid 1px black;width: 600px;height: 250px;margin-bottom: 10px;">
+                                <!--上传图片预览图-->
+                                <!--<img src="" style="height: 100px;width: 100px;margin: 10px 0px 0px 10px;">-->
+                             </div>
+                            <div class="btns">
+                                <span id="filePicker">选择图片</span>
+                                <input type="button" id="ctlBtn" class="btn btn-default" style="margin-left: 20px" onclick="uploader_img()" value="开始上传"/>
+                            </div>
+                        </p>
+                        <p>
+                            <label>商品信息</label>
+                            <input type="hidden" id="gdInfo" name="gdInfo">
+                            <div class="summernote" ></div>
+                        </p>
+                        <p>
+                            <input class="mybutton" type="submit" value="提交" onclick="initInfo()"/>
+                        </p>
+                    </fieldset>
+                    <div class="clear"></div>
+                    <!-- End .clear -->
+                </form>
+            </div>
+            <!-- End #tab2 -->
+        </div>
+        <!-- End .content-box-content -->
+    </div>
+</div>
+<!-- End #main-content -->
+</body>
+</html>
